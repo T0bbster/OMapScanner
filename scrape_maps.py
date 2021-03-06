@@ -81,7 +81,9 @@ def find_imgs_to_downloads(save_dir, imgs, exts):
 def download_images(base_url, img_dir, save_dir, imgs):
     exts = ['.jpg', '.png', '.JPG', '.PNG']
 
-    imgs_to_download, imgs_to_exclude  = find_imgs_to_downloads(save_dir, imgs, exts)
+    #imgs_to_download, imgs_to_exclude  = find_imgs_to_downloads(save_dir, imgs, exts)
+    imgs_to_download = imgs
+    imgs_to_exclude = []
 
     if imgs_to_exclude:
         print(f'Ignoring {len(imgs_to_exclude)} images')
@@ -158,6 +160,12 @@ def main():
     
     base_url = 'http://karten.guedels.ch/'
     scrape_from_page(base_url, save_dir, tmp_dir)
+
+
+def test_new_session((base_url, img_dir, save_dir, imgs):
+    base_url = 'http://karten.guedels.ch/'
+    save_dir = Path('maps/')
+    tmp_dir = Path('tmp/')
 
 
 if __name__ == "__main__":
