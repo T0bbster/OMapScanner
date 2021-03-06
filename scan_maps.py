@@ -51,8 +51,7 @@ def main():
     parsed_args = parse_arguments()
     out_dir = parsed_args.output_directory
     print(f'Writing output to directory: \'{out_dir}\'')
-    if (not os.path.exists(out_dir)):
-        print(f'\tCreating directory: \'{out_dir}\'')
+    if not os.path.exists(out_dir):
         os.mkdir(out_dir)
 
     print(f'Initializing reader for the languages {parsed_args.languages}... ', end='')
@@ -63,7 +62,7 @@ def main():
 
     print(f'Scanning files in directory: \'{parsed_args.directory}\'')
     failed_files = []
-    for root, dirs, files in os.walk(parsed_args.directory):
+    for root, _, files in os.walk(parsed_args.directory):
         for filename in files:
             try:
                 print(f'\tScanning {filename}', end='\r')
