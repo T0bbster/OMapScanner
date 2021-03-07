@@ -1,3 +1,5 @@
 maps/*
+logs/*
+tmp/*
 out
 .vscode
