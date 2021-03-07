@@ -24,19 +24,6 @@ logging.basicConfig(
 )
 log = IndentedLoggerAdapter(logging.getLogger(__name__))
 
-find_digits = re.compile('\d+')
-find_map = re.compile('map=\d+')
-
-def scrape_html(base_url):
-    all_maps_query = 'users.php?lastMaps=all'
-    r = requests.get(base_url + all_maps_query)
-    return r.text
-
-
-def write_html(file, html):
-    with file.open('w', encoding='utf-8') as html_file:
-        html_file.write(html)
-
 
 def get_img_numbers(html):
     return [re.findall(find_digits, match)[0] for match in re.findall(find_map, html)]
@@ -121,38 +108,8 @@ def download_images(base_url, img_dir, save_dir, imgs):
         print(f'Successfully downloaded {n_downloaded} images')
 
 
-def get_html(base_url, tmp_dir):
-    name = urlsplit(base_url).netloc
-    file = tmp_dir / f'{name}.html'
-    if not file.exists():
-        print('\tDownloading image list')
-        html = scrape_html(base_url)
-        #soup = BeautifulSoup(html, features='lxml')
-        #soup.script.decompose()
-        write_html(file, html)
-        return html
-    else:
-        with file.open('r', encoding='utf-8') as fp:
-            return fp.read()
 
 
-def time_it(func, msg):
-    time_start = time.time()
-    res = func()
-    time_end = time.time()
-    print(msg.format(time_end - time_start))
-    return res
-
-
-def scrape_from_page(base_url, save_dir, tmp_dir):
-    img_dir = 'map_images'
-    print(f'Downloading from {base_url}')
-    print('')
-
-    html = time_it(lambda: get_html(base_url, tmp_dir), 'Fetched html in {:2.4f} seconds.')
-    img_numbers = time_it(lambda: get_img_numbers(html), 'Parsed in {:2.4f} seconds.')
-
-    download_images(base_url, img_dir, save_dir, img_numbers[60:70])
 
 
 def main():
@@ -167,13 +124,18 @@ def main():
     scrape_from_page(base_url, save_dir, tmp_dir)
 
 
-@contextlib.contextmanager
-def report_time(test):
-    t0 = time.time()
-    yield
-    print('Time needed for {} called: {:3.2f}s'.format(test, time.time() - t0))
 
-
+def get_html(base_url, tmp_dir):
+    name = urlsplit(base_url).netloc
+    file = tmp_dir / f'{name}.html'
+    if not file.exists():
+        print('\tDownloading image list')
+        html = scrape_html(base_url)
+        write_html(file, html)
+        return html
+    else:
+        with file.open('r', encoding='utf-8') as fp:
+            return fp.read()
 chunk_size = 256 * 1024
 async def download_async(session, url, filename):
     async with session.get(url) as response:
@@ -278,46 +240,7 @@ async def download_images_async_opt(base_url, img_dir, save_dir, imgs, exts):
         await try_download_images_async_opt(session, base_url, img_dir, save_dir, imgs, exts)
 
 
-def remove_files():
-    r = glob.glob('maps/*')
-    for i in r:
-        os.remove(i)
-
-
-def pre(start, end):
-    imgs = []
-    with open('imgs.txt', 'r') as imgs_file:
-        imgs = [line.strip() for line in imgs_file.readlines()]
-    return imgs
-
-
-def tests():
-    imgs = pre(0, 100)
-    
-    base_url = 'http://karten.guedels.ch/'
-    img_dir = 'map_images'
-    save_dir = Path('maps/')
-    exts = ['.jpg', '.png', '.JPG', '.PNG']
-
-    loop = asyncio.get_event_loop()
-    for max_images in [2, 8, 20, 50]:
-        print('*' * 80)
-        print('')
-        remove_files()
-        with report_time('classic'):
-            try_download_images(base_url, img_dir, save_dir, imgs[0:max_images], exts)
-        print('')
-
-        remove_files()
-        with report_time('aiohttp'):
-            loop.run_until_complete(download_images_async(base_url, img_dir, save_dir, imgs[0:max_images], exts))
-        print('')
-            
-        remove_files()
-        with report_time('aiohttp-opt'):
-            loop.run_until_complete(download_images_async_opt(base_url, img_dir, save_dir, imgs[0:max_images], exts))
-        print('')
 
 
 if __name__ == "__main__":
-    tests()
+    main()
