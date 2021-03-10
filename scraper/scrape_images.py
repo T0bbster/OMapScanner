@@ -17,21 +17,19 @@ async def download_async_opt(session, url, file):
                         break
                     fd.write(chunk)
         else:
-            log.debug(f'HTTPError {response.status}: {file.as_posix()} not found')
+            log.add.().add().debug(f'HTTPError {response.status}: {file.as_posix()} not found').sub().sub()
 
 
 async def try_download_image_async_opt(session, base_url, img_dir, save_dir, img, exts):
-    log.add()
     res = False
-    log.debug(f'Trying to fetch {img}')
+    log.add().debug(f'Trying to fetch {img}').sub()
     for ext in exts:
         img_path = Path(img_dir) / f'{img}{ext}'
         img_url = urljoin(base_url, img_path.as_posix())
         file = save_dir / f'{img}{ext}'
         await download_async_opt(session, img_url, file)
-        log.info(f'Saved {file.as_posix()}')
+        log.add().info(f'Saved {file.as_posix()}').sub()
         res = True
-    log.sub()
     return res, img
 
 
