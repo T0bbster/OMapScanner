@@ -1,0 +1,17 @@
+train: ../omaps/images
+val: ../omaps/labels
+nc: 13
+names:
+- map_name
+- map_scale
+- contours_distance
+- course_distance
+- course_class
+- event_name
+- map_revision
+- event_date
+- course_elevation
+- map_year
+- sponsor
+- map_legend
+- event_year
