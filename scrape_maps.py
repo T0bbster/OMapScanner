@@ -2,6 +2,7 @@ import asyncio
 from util.log import log
 import logging
 from pathlib import Path
+import numpy as np
 from util.timing import time_it
 from scraper.scrape_html import get_html
 from util.util import parse_img_numbers
@@ -57,11 +58,16 @@ def scrape_from_page(base_url, save_dir, tmp_dir, limit=None):
 
     html = get_html(base_url, tmp_dir)
     img_numbers = parse_img_numbers(html)
-    print(f'Page has a total of {len(img_numbers)} maps')
+    n_imgs = len(img_numbers)
+    print(f'Page has a total of {n_imgs} maps')
+
+    img_arr = np.array(img_numbers)
+    indices = np.random.randint(n_imgs, size=limit)
+    print(f'Downloading a selection of {len(indices)} images')
 
     if limit and limit >= len(img_numbers):
         limit = None
-    download_images(base_url, img_dir, save_dir, img_numbers[0:limit])
+    download_images(base_url, img_dir, save_dir, img_arr[indices])
 
 
 def main():
