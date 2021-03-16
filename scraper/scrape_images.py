@@ -17,7 +17,7 @@ async def download_async_opt(session, url, file):
                         break
                     fd.write(chunk)
         else:
-            log.add.().add().debug(f'HTTPError {response.status}: {file.as_posix()} not found').sub().sub()
+            log.add().add().debug(f'HTTPError {response.status}: {file.as_posix()} not found').sub().sub()
 
 
 async def try_download_image_async_opt(session, base_url, img_dir, save_dir, img, exts):
