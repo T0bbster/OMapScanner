@@ -1,5 +1,6 @@
-train: ../omaps/images
-val: ../omaps/labels
+download: https://github.com/T0bbster/OMapScanner/releases/download/v0.1-alpha.1/omaps.zip
+train: ../omaps/train
+val: ../omaps/val
 nc: 13
 names:
 - map_name
