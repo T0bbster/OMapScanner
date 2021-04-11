@@ -70,17 +70,29 @@ def scrape_from_page(base_url, save_dir, tmp_dir, limit=None):
     download_images(base_url, img_dir, save_dir, img_arr[indices])
 
 
-def main():
+def parse_arguments()
+    parser = argparse.ArgumentParser(
+        description='Scrape orienteering maps from a DOMA page'
+    )
+    parser.add_argument('--url', type=dir_path, help='URL to a doma page', required=True)
+    parser.add_argument('--save-dir', type=dir_path, help='Directory to save image files', default='maps')
+    parser.add_argument('--tmp-dir', help='Temporary directory', default='tmp')
+    parser.add_argument('--limit', type=int, help='Limit images to fetch', default=50)
+    return parser.parse_args()
+
+
+def main(opt):
     log.setLevel(logging.DEBUG)
-    save_dir = Path('maps/')
+
+    save_dir = Path(opt.save_dir)
     save_dir.mkdir(parents=True, exist_ok=True)
 
-    tmp_dir = Path('tmp/')
+    tmp_dir = Path(opt.tmp_dir')
     tmp_dir.mkdir(parents=True, exist_ok=True)
     
-    base_url = 'http://karten.guedels.ch/'
-    scrape_from_page(base_url, save_dir, tmp_dir, limit=50)
+    scrape_from_page(opt.url, save_dir, tmp_dir, limit=50)
 
 
 if __name__ == "__main__":
-    main()
+    opt = parse_arguments()
+    main(opt)
