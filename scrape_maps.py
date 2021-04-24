@@ -1,4 +1,5 @@
 import asyncio
+import argparse
 from util.log import log
 import logging
 from pathlib import Path
@@ -7,6 +8,7 @@ from util.timing import time_it
 from scraper.scrape_html import get_html
 from util.util import parse_img_numbers
 from scraper.scrape_images import download_images_async_opt
+from util.util import dir_path
 
 
 def find_imgs_to_downloads(save_dir, imgs, exts):
@@ -61,38 +63,41 @@ def scrape_from_page(base_url, save_dir, tmp_dir, limit=None):
     n_imgs = len(img_numbers)
     print(f'Page has a total of {n_imgs} maps')
 
+    if not limit:
+        limit = n_imgs
+    else:
+        limit = min(limit, n_imgs)
+
     img_arr = np.array(img_numbers)
-    indices = np.random.randint(n_imgs, size=limit)
+    indices = np.random.choice(n_imgs, limit, replace=False)
     print(f'Downloading a selection of {len(indices)} images')
 
-    if limit and limit >= len(img_numbers):
-        limit = None
     download_images(base_url, img_dir, save_dir, img_arr[indices])
 
 
-def parse_arguments()
+def parse_arguments():
     parser = argparse.ArgumentParser(
         description='Scrape orienteering maps from a DOMA page'
     )
-    parser.add_argument('--url', type=dir_path, help='URL to a doma page', required=True)
+    parser.add_argument('--url', type=str, help='URL to a doma page', required=True)
     parser.add_argument('--save-dir', type=dir_path, help='Directory to save image files', default='maps')
     parser.add_argument('--tmp-dir', help='Temporary directory', default='tmp')
     parser.add_argument('--limit', type=int, help='Limit images to fetch', default=50)
     return parser.parse_args()
 
 
-def main(opt):
+def main(args):
     log.setLevel(logging.DEBUG)
 
-    save_dir = Path(opt.save_dir)
+    save_dir = Path(args.save_dir)
     save_dir.mkdir(parents=True, exist_ok=True)
 
-    tmp_dir = Path(opt.tmp_dir')
+    tmp_dir = Path(args.tmp_dir)
     tmp_dir.mkdir(parents=True, exist_ok=True)
     
-    scrape_from_page(opt.url, save_dir, tmp_dir, limit=50)
+    scrape_from_page(args.url, save_dir, tmp_dir, limit=50)
 
 
 if __name__ == "__main__":
-    opt = parse_arguments()
-    main(opt)
+    args = parse_arguments()
+    main(args)
